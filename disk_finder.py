@@ -1,32 +1,34 @@
 import os
 import asyncio
+from multiprocessing import Pipe, Process, Manager
+import time
+
+REFRESH_TIME = 5
 
 def check_disk(d):
     os.path.exists(os.path.join(d + ':/', 'Garmin', 'GPX', 'Current'))
 
-# Начинаем чекать диски. Если не нашли, ставим таймаут и пробуем снова.
 class DiskFinder():
 
-    _handlers = []
+    def __init__(self):
+        self._manager = Manager()
+        self.disks = self._manager.list()
+        self._process = Process(target=self._main)
+        self._process.start()
 
-    last_disks = {}
+    def _main(self):
+        asyncio.run(self._main_async())
 
-    def find_disks(self):
-        return {'C:', 'D:'}
-        # return set([chr(x) + ':' for x in range(65, 91) if check_disk(chr(x))])
+    async def _main_async(self):
+        await self._monitor()
 
-    def subscribe(self, handler):
-        self._handlers.append(handler)
+    def _find_disks(self):
+        return ['C:', 'D:']
+        # return [chr(x) + ':' for x in range(65, 91) if check_disk(chr(x))]
 
-    async def monitor(self):
-        loop = asyncio.get_running_loop()
-
+    async def _monitor(self):
         while True:
-            disks = self.find_disks()
+            del self.disks[:]
+            self.disks.extend(self._find_disks())
 
-            if len(disks.difference(self.last_disks)) != 0:
-                self.last_disks = disks
-                for h in self._handlers:
-                    loop.create_task(h(list(disks)))
-
-            await asyncio.sleep(5)
+            await asyncio.sleep(REFRESH_TIME)
