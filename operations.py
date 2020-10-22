@@ -14,5 +14,6 @@ def clean_old(disk):
     for f in to_remove:
         try:
             print(f)
+            # os.remove(f)
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
