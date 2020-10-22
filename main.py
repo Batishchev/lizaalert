@@ -1,57 +1,39 @@
 import sys
-import time
-import asyncio
-from multiprocessing import Pipe
-from disk_finder import DiskFinder
-import operations
+from disk_finder import *
+from operations import *
 
-class Main():
-    available_disks = []
-    current_disk = ''
+def main():
+    print()
+    print('1 - Очистить старые карты')
+    print('q - Выход')
 
-    def __init__(self):
-        self.disk_finder = DiskFinder()
+    task = input('\nВыберите операцию: ')
 
-    def main(self):
-        while True:
-            available_disks = self.disk_finder.disks
+    if task == '1':
+        disk = select_disk(find_disks())
 
-            print(available_disks)
+        if not disk:
+            print('Не нашли диск')
+        else:
+            clean_old(disk)
 
-            time.sleep(1)
+    main()
 
-            if len(available_disks) <= 0:
-                continue
-            elif len(available_disks) == 1:
-                self.current_disk = available_disks[0]
-            else:
-                self.current_disk = available_disks[0]
+def select_disk(disks):
+    if len(disks) == 1:
+        return disks[0]
+    elif len(disks) > 1:
+        print('\nНашли диски %a' % disks)
+        disk = input('Введите букву диска, или q для пропуска ( %s ): ' % disks[0][0]).upper()
 
+        if disk == 'Q':
+            return None
+        elif disk == '':
+            return disks[0]
+        elif check_disk(disk):
+            return disk
+        else:
+            print('Неверный диск')
+            return select_disk(disks)
 
-
-Main().main()
-
-# async def disk_found(disks):
-#     [disk, *_] = disks
-#
-#     if len(disks) == 1:
-#         print('Нашли диск %s \n' % disk)
-#     else:
-#         print('Нашли диски %a \n' % disks)
-#
-#         disk = input('Введите букву диска, или q для пропуска: ')
-#
-#         if disk == 'q':
-#             return
-#         elif not check_disk(disk):
-#             print('Неверный диск')
-#             return await disk_found(disks)
-#
-#     print('1. Очистить старые карты')
-#
-#     task = input('Что делаем: ')
-#
-#     if task == '1':
-#         print('Очищено')
-#
-# asyncio.run(main())
+main()
