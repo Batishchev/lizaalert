@@ -9,7 +9,10 @@ def main():
 
     task = input('\nВыберите операцию: ')
 
-    if task == '1':
+    if task == 'q' or task == 'Q':
+        return
+
+    elif task == '1':
         disk = select_disk(find_disks())
 
         if not disk:
