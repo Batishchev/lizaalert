@@ -27,27 +27,27 @@ def clean_old(disk):
     archive = get_free_archive_path()
     print('Сохраняем диск %s в архив %s' % (disk, archive))
 
-    pathlib.Path(archive, 'Garmin', 'GPX').mkdir(parents=True, exist_ok=True)
+    pathlib.Path(archive, 'GPX').mkdir(parents=True, exist_ok=True)
     for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'GPX', '*.gpx')):
         try:
             print('Архивируем %s' % f)
-            shutil.move(f, os.path.join(archive, 'Garmin', 'GPX'))
+            shutil.move(f, os.path.join(archive, 'GPX'))
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
 
-    pathlib.Path(archive, 'Garmin', 'CustomMaps').mkdir(parents=True, exist_ok=True)
+    pathlib.Path(archive, 'CustomMaps').mkdir(parents=True, exist_ok=True)
     for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'CustomMaps', '*.kmz')):
         try:
             print('Архивируем %s' % f)
-            shutil.move(f, os.path.join(archive, 'Garmin', 'CustomMaps'))
+            shutil.move(f, os.path.join(archive, 'CustomMaps'))
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
 
-    pathlib.Path(archive, 'Garmin', 'BirdsEye').mkdir(parents=True, exist_ok=True)
+    pathlib.Path(archive, 'BirdsEye').mkdir(parents=True, exist_ok=True)
     for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'BirdsEye', '*.jnx')):
         try:
             print('Архивируем %s' % f)
-            shutil.move(f, os.path.join(archive, 'Garmin', 'BirdsEye'))
+            shutil.move(f, os.path.join(archive, 'BirdsEye'))
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
 
