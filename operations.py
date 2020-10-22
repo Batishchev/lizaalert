@@ -4,20 +4,47 @@ import shutil
 import zipfile
 import pathlib
 
-def clean_old(disk):
-    print('Чистим диск %s' % disk)
-    to_remove = glob.glob(
-        os.path.join(disk + ':/', 'Garmin', 'GPX', '*.gpx')
-    ) + glob.glob(
-        os.path.join(disk + ':/', 'Garmin', 'CustomMaps', '*.kmz')
-    ) + glob.glob(
-        os.path.join(disk + ':/', 'Garmin', 'BirdsEye', '*.jnx')
-    )
+def get_free_archive_path():
+    archive = pathlib.Path('archive')
+    archive.mkdir(parents=True, exist_ok=True)
+    all_archives = [f for f in os.listdir(archive) if os.path.isdir(os.path.join(archive, f))]
+    all_archives.sort()
+    all_archives.reverse()
 
-    for f in to_remove:
+    index = 0
+    for f in all_archives:
         try:
-            print('Удаляем %s' % f)
-            # os.remove(f)
+            index = int(f) + 1
+            break
+        except:
+            continue
+
+    result = pathlib.Path(archive, str(index))
+    result.mkdir(parents=True, exist_ok=True)
+    return result
+
+def clean_old(disk):
+    archive = get_free_archive_path()
+    print('Сохраняем диск %s в архив %s' % (disk, archive))
+
+    for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'GPX', '*.gpx')):
+        try:
+            print('Архивируем %s' % f)
+            shutil.move(f, os.path.join(archive, 'Garmin', 'GPX'))
+        except OSError as e:
+            print("Error: %s : %s" % (f, e.strerror))
+
+    for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'CustomMaps', '*.kmz')):
+        try:
+            print('Архивируем %s' % f)
+            shutil.move(f, os.path.join(archive, 'Garmin', 'CustomMaps'))
+        except OSError as e:
+            print("Error: %s : %s" % (f, e.strerror))
+
+    for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'BirdsEye', '*.jnx')):
+        try:
+            print('Архивируем %s' % f)
+            shutil.move(f, os.path.join(archive, 'Garmin', 'BirdsEye'))
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
 
