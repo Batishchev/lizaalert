@@ -5,6 +5,7 @@ from operations import *
 def main():
     print()
     print('1 - Очистить старые карты')
+    print('2 - Копировать новые карты')
     print('q - Выход')
 
     task = input('\nВыберите операцию: ')
@@ -19,6 +20,14 @@ def main():
             print('Не нашли диск')
         else:
             clean_old(disk)
+
+    elif task == '2':
+        disk = select_disk(find_disks())
+
+        if not disk:
+            print('Не нашли диск')
+        else:
+            copy_new(disk)
 
     main()
 
