@@ -54,15 +54,36 @@ def clean_old(disk):
 
 def copy_new(disk):
     # Распаковываем архив, если ещё не распаковали
-    if not os.path.exists('new_maps'):
-        new_maps = glob.glob('*.zip')
+    if os.path.exists('new_maps') and os.path.isdir('new_maps'):
+        shutil.rmtree('new_maps')
 
-        if len(new_maps) == 0:
-            print('Не смогли найти архив с картами')
-            return
+    new_maps = glob.glob('*.zip')
 
-        with zipfile.ZipFile(new_maps[0], 'r') as zip_ref:
-            zip_ref.extractall('new_maps')
+    if len(new_maps) == 0:
+        print('Не смогли найти архив с картами')
+        return
+
+    while len(new_maps) > 1:
+        print('\nНашли несколько zip архивов')
+        for i in range(len(new_maps)):
+            print('%i - %s' % (i+1, new_maps[i]))
+        print('0 - пропустить')
+        try:
+            index = int(input('Выберите нужный zip: '))
+
+            if index == 0:
+                return
+
+            if index < 1 or index > len(new_maps):
+                continue
+
+            new_maps = [new_maps[index-1]]
+            break
+        except:
+            continue
+
+    with zipfile.ZipFile(new_maps[0], 'r') as zip_ref:
+        zip_ref.extractall('new_maps')
 
     # Копируем GPX
     target_gpx = pathlib.Path(disk + ':/', 'Garmin', 'GPX')
@@ -107,3 +128,6 @@ def copy_new(disk):
     for f in glob.glob(os.path.join('new_maps', 'Garmin', 'BirdsEye', '*.jnx')):
         print('Копируем %s' % f)
         shutil.copy(f, target_jnx)
+
+    if os.path.exists('new_maps') and os.path.isdir('new_maps'):
+        shutil.rmtree('new_maps')
