@@ -27,6 +27,7 @@ def clean_old(disk):
     archive = get_free_archive_path()
     print('Сохраняем диск %s в архив %s' % (disk, archive))
 
+    pathlib.Path(archive, 'Garmin', 'GPX').mkdir(parents=True, exist_ok=True)
     for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'GPX', '*.gpx')):
         try:
             print('Архивируем %s' % f)
@@ -34,6 +35,7 @@ def clean_old(disk):
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
 
+    pathlib.Path(archive, 'Garmin', 'CustomMaps').mkdir(parents=True, exist_ok=True)
     for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'CustomMaps', '*.kmz')):
         try:
             print('Архивируем %s' % f)
@@ -41,12 +43,14 @@ def clean_old(disk):
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
 
+    pathlib.Path(archive, 'Garmin', 'BirdsEye').mkdir(parents=True, exist_ok=True)
     for f in glob.glob(os.path.join(disk + ':/', 'Garmin', 'BirdsEye', '*.jnx')):
         try:
             print('Архивируем %s' % f)
             shutil.move(f, os.path.join(archive, 'Garmin', 'BirdsEye'))
         except OSError as e:
             print("Error: %s : %s" % (f, e.strerror))
+
 
 def copy_new(disk):
     # Распаковываем архив, если ещё не распаковали
